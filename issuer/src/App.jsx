@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { KeyManagement } from './components/KeyManagement';
 import { ManualEntry } from './components/ManualEntry';
 import CSVUpload from './components/CSVUpload';
+import { importPrivateKey } from './utils/crypto';
+
+const STORAGE_KEYS = {
+  privateKeyPEM: 'ampa.issuer.privateKeyPEM',
+  publicKeyPEM: 'ampa.issuer.publicKeyPEM'
+};
 
 const styles = {
   container: {
@@ -60,11 +66,45 @@ function App() {
   const [privateKeyPEM, setPrivateKeyPEM] = useState('');
   const [publicKeyPEM, setPublicKeyPEM] = useState('');
 
+  useEffect(() => {
+    const storedPrivateKeyPEM = localStorage.getItem(STORAGE_KEYS.privateKeyPEM);
+    const storedPublicKeyPEM = localStorage.getItem(STORAGE_KEYS.publicKeyPEM);
+
+    if (!storedPrivateKeyPEM) return;
+
+    const loadStoredKey = async () => {
+      try {
+        const privKey = await importPrivateKey(storedPrivateKeyPEM);
+        setPrivateKey(privKey);
+        setPrivateKeyPEM(storedPrivateKeyPEM);
+        setPublicKeyPEM(storedPublicKeyPEM || '');
+        setPublicKey(null);
+      } catch (error) {
+        localStorage.removeItem(STORAGE_KEYS.privateKeyPEM);
+        localStorage.removeItem(STORAGE_KEYS.publicKeyPEM);
+      }
+    };
+
+    loadStoredKey();
+  }, []);
+
   const handleKeysChange = (privKey, pubKey, privPEM, pubPEM) => {
     setPrivateKey(privKey);
     setPublicKey(pubKey);
     setPrivateKeyPEM(privPEM);
     setPublicKeyPEM(pubPEM);
+
+    if (privPEM) {
+      localStorage.setItem(STORAGE_KEYS.privateKeyPEM, privPEM);
+      if (pubPEM) {
+        localStorage.setItem(STORAGE_KEYS.publicKeyPEM, pubPEM);
+      } else {
+        localStorage.removeItem(STORAGE_KEYS.publicKeyPEM);
+      }
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.privateKeyPEM);
+      localStorage.removeItem(STORAGE_KEYS.publicKeyPEM);
+    }
   };
 
   return (
@@ -109,6 +149,8 @@ function App() {
         <KeyManagement
           privateKey={privateKey}
           publicKey={publicKey}
+          privateKeyPEM={privateKeyPEM}
+          publicKeyPEM={publicKeyPEM}
           onKeysChange={handleKeysChange}
         />
       )}

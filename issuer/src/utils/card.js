@@ -20,7 +20,7 @@ export function sanitizeFileName(name) {
  */
 async function generateQRCanvas(jwt) {
   const QRCode = await import('qrcode');
-  const url = `https://verify.ampanovaschoolalmeria.org/verify#token=${jwt}`;
+  const url = `https://verify.ampanovaschoolalmeria.org/#token=${jwt}`;
 
   const canvas = document.createElement('canvas');
   await QRCode.toCanvas(canvas, url, {

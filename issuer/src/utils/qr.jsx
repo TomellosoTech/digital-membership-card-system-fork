@@ -6,7 +6,7 @@ import { QRCodeCanvas } from 'qrcode.react';
  * @param {string} baseUrl - Base verification URL (default: production URL)
  * @returns {string} Full verification URL with token
  */
-export function generateQRUrl(jwt, baseUrl = 'https://verify.ampanovaschoolalmeria.org/verify') {
+export function generateQRUrl(jwt, baseUrl = 'https://verify.ampanovaschoolalmeria.org/') {
   return `${baseUrl}#token=${jwt}`;
 }
 

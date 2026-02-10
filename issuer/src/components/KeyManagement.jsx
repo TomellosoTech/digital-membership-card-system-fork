@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     generateKeypair,
     exportPrivateKey,
@@ -96,11 +96,19 @@ const styles = {
     },
 };
 
-export function KeyManagement({ privateKey, publicKey, onKeysChange }) {
+export function KeyManagement({ privateKey, publicKey, privateKeyPEM: initialPrivateKeyPEM, publicKeyPEM: initialPublicKeyPEM, onKeysChange }) {
     const [generating, setGenerating] = useState(false);
     const [importError, setImportError] = useState("");
-    const [privateKeyPEM, setPrivateKeyPEM] = useState("");
-    const [publicKeyPEM, setPublicKeyPEM] = useState("");
+    const [privateKeyPEM, setPrivateKeyPEM] = useState(initialPrivateKeyPEM || "");
+    const [publicKeyPEM, setPublicKeyPEM] = useState(initialPublicKeyPEM || "");
+
+    useEffect(() => {
+        setPrivateKeyPEM(initialPrivateKeyPEM || "");
+    }, [initialPrivateKeyPEM]);
+
+    useEffect(() => {
+        setPublicKeyPEM(initialPublicKeyPEM || "");
+    }, [initialPublicKeyPEM]);
 
     const handleGenerateKeypair = async () => {
         setGenerating(true);
@@ -283,9 +291,9 @@ export function KeyManagement({ privateKey, publicKey, onKeysChange }) {
                 <div style={styles.warning}>
                     <div style={styles.warningTitle}>🔒 SECURITY NOTE</div>
                     <p style={{ margin: "8px 0", color: "#c62828" }}>
-                        Private key is stored ONLY in memory and will be cleared
-                        when you close/refresh this page. Never stored in
-                        browser storage.
+                        Private key is saved in browser storage to survive
+                        refresh. Use only on trusted devices and clear browser
+                        data when finished.
                     </p>
                 </div>
             </div>
