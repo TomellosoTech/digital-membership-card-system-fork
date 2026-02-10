@@ -198,6 +198,11 @@ issuer/
 **Fix**:
 - Check required columns: `full_name`, `member_id`, `expiry_date`
 - Verify date formats
+
+## Credits
+
+Vibe Coder: Raul Jimenez Ortega
+AI Assistants: Claude, Codex, Copilot
 - Ensure dates are in the future
 
 ### Performance issues with large batches
